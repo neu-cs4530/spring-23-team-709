@@ -21,10 +21,10 @@ export default class ListeningArea extends InteractableArea {
   }
 
   /**
-   * Creates a new ViewingArea
+   * Creates a new ListeningArea
    *
    * @param listeningArea model containing this area's starting state
-   * @param coordinates the bounding box that defines this viewing area
+   * @param coordinates the bounding box that defines this listening area
    * @param townEmitter a broadcast emitter that can be used to emit updates to players
    */
   public constructor(
@@ -38,9 +38,9 @@ export default class ListeningArea extends InteractableArea {
   }
 
   /**
-   * Removes a player from this viewing area.
+   * Removes a player from this listening area.
    *
-   * When the last player leaves, this method clears the video of this area and
+   * When the last player leaves, this method clears the song of this area and
    * emits that update to all of the players
    *
    * @param player
@@ -54,7 +54,7 @@ export default class ListeningArea extends InteractableArea {
   }
 
   /**
-   * Updates the state of this ViewingArea, setting the video, isPlaying and progress properties
+   * Updates the state of this ListeningArea, setting the song, isPlaying and progress properties
    *
    * @param listeningArea updated model
    */
@@ -76,9 +76,9 @@ export default class ListeningArea extends InteractableArea {
   }
 
   /**
-   * Creates a new ViewingArea object that will represent a Viewing Area object in the town map.
-   * @param mapObject An ITiledMapObject that represents a rectangle in which this viewing area exists
-   * @param townEmitter An emitter that can be used by this viewing area to broadcast updates to players in the town
+   * Creates a new ListeningArea object that will represent a Listening Area object in the town map.
+   * @param mapObject An ITiledMapObject that represents a rectangle in which this listening area exists
+   * @param townEmitter An emitter that can be used by this listening area to broadcast updates to players in the town
    * @returns
    */
   public static fromMapObject(mapObject: ITiledMapObject, townEmitter: TownEmitter): ListeningArea {

@@ -15,7 +15,7 @@ export type ListeningAreaEvents = {
      * A progressChange event indicates that the progress of the video has changed, either
      * due to the user scrubbing through the video, or from the natural progression of time.
      * Listeners are passed the new playback time elapsed in seconds.
-     */
+    */
     progressChange: (elapsedTimeSec: number) => void;
     /**
      * A songChange event indicates that the song selected for this li area has changed.
@@ -34,7 +34,6 @@ export type ListeningAreaEvents = {
  */
 export default class ListeningAreaController extends (EventEmitter as new () => TypedEventEmitter<ListeningAreaEvents>) {
     private _model: ListeningAreaModel;
-
     /**
      * Constructs a new ListeningAreaController, initialized with the state of the
      * provided listeningAreaModel.
