@@ -16,12 +16,14 @@ import {
   PlayerLocation,
   TownSettingsUpdate,
   ViewingArea as ViewingAreaModel,
+  ListeningArea as ListeningAreaModel,
   PosterSessionArea as PosterSessionAreaModel,
 } from '../types/CoveyTownSocket';
 import { isConversationArea, isViewingArea, isPosterSessionArea } from '../types/TypeUtils';
 import ConversationAreaController from './ConversationAreaController';
 import PlayerController from './PlayerController';
 import ViewingAreaController from './ViewingAreaController';
+import ListeningAreaController from './ListeningAreaController';
 import PosterSessionAreaController from './PosterSessionAreaController';
 
 const CALCULATE_NEARBY_PLAYERS_DELAY = 300;
@@ -72,6 +74,11 @@ export type TownEvents = {
    * the town controller's record of viewing areas.
    */
   viewingAreasChanged: (newViewingAreas: ViewingAreaController[]) => void;
+  /**
+   * An event that indicates that the set of listening areas has changed. This event is emitted after updating
+   * the town controller's record of listening areas.
+   */
+  listeningAreasChanged: (newListeningAreas: ListeningAreaController[]) => void;
   /**
    * An event that indicates that the set of poster session areas has changed. This event is emitted after updating
    * the town controller's record of poster session areas.
@@ -198,6 +205,8 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
 
   private _viewingAreas: ViewingAreaController[] = [];
 
+  private _listeningAreas: ListeningAreaController[] = [];
+
   private _posterSessionAreas: PosterSessionAreaController[] = [];
 
   public constructor({ userName, townID, loginController }: ConnectionProperties) {
@@ -314,9 +323,18 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     return this._viewingAreas;
   }
 
+  public get listeningAreas() {
+    return this._listeningAreas;
+  }
+
   public set viewingAreas(newViewingAreas: ViewingAreaController[]) {
     this._viewingAreas = newViewingAreas;
     this.emit('viewingAreasChanged', newViewingAreas);
+  }
+
+  public set listeningAreas(newListeningAreas: ListeningAreaController[]) {
+    this._listeningAreas = newListeningAreas;
+    this.emit('listeningAreasChanged', newListeningAreas);
   }
 
   public get posterSessionAreas() {
@@ -443,6 +461,11 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
         }
       } else if (isViewingArea(interactable)) {
         const relArea = this.viewingAreas.find(area => area.id == interactable.id);
+        if (relArea) {
+          relArea.updateFrom(interactable);
+        }
+      } else if (isListeningArea(interactable)) {
+        const relArea = this.listeningAreas.find(area => area.id == interactable.id);
         if (relArea) {
           relArea.updateFrom(interactable);
         }
