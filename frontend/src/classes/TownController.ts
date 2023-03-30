@@ -6,6 +6,7 @@ import { io } from 'socket.io-client';
 import TypedEmitter from 'typed-emitter';
 import Interactable from '../components/Town/Interactable';
 import ViewingArea from '../components/Town/interactables/ViewingArea';
+import ListeningArea from '../components/Town/interactables/ListeningArea';
 import PosterSesssionArea from '../components/Town/interactables/PosterSessionArea';
 import { LoginController } from '../contexts/LoginControllerContext';
 import { TownsService, TownsServiceClient } from '../generated/client';
@@ -18,7 +19,6 @@ import {
   ViewingArea as ViewingAreaModel,
   ListeningArea as ListeningAreaModel,
   PosterSessionArea as PosterSessionAreaModel,
-  ListeningArea,
 } from '../types/CoveyTownSocket';
 import {
   isConversationArea,
@@ -685,7 +685,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
       const newController = new ListeningAreaController({
         id: listeningArea.id,
         isPlaying: false,
-        song: listeningArea.song,
+        song: listeningArea.defaultSong,
       });
       this._listeningAreas.push(newController);
       return newController;

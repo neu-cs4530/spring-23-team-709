@@ -1,5 +1,3 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable @typescript-eslint/naming-convention */
 import React, { createContext, ReactNode, useCallback, useState } from 'react';
 import {
   CreateLocalTrackOptions,
@@ -49,6 +47,7 @@ export interface IVideoContext {
   setBackgroundSettings: (settings: BackgroundSettings) => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const VideoContext = createContext<IVideoContext>(null!);
 
 interface VideoProviderProps {
@@ -61,8 +60,8 @@ interface VideoProviderProps {
 export function VideoProvider({
   options,
   children,
-  onError = () => { },
-  onDisconnect = () => { },
+  onError = () => {},
+  onDisconnect = () => {},
 }: VideoProviderProps) {
   const onErrorCallback: ErrorCallback = useCallback(
     error => {

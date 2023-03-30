@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import TownController from '../../classes/TownController';
 import TownGameScene from './TownGameScene';
 
@@ -5,6 +6,7 @@ import TownGameScene from './TownGameScene';
 export type KnownInteractableTypes =
   | 'conversationArea'
   | 'viewingArea'
+  | 'listeningArea'
   | 'transporter'
   | 'posterSessionArea';
 
@@ -95,16 +97,16 @@ export default abstract class Interactable extends Phaser.GameObjects.Sprite {
   /**
    * Invoked when the player begins to overlap with this interactable
    */
-  overlap(): void {}
+  overlap(): void { }
 
   /**
    * Invoked when the player no longer overlaps with this interactable
    */
-  overlapExit(): void {}
+  overlapExit(): void { }
 
   /**
    * Invoked when the player is overlapping with this interactable and first
    * presses the spacebar
    */
-  interact(): void {}
+  interact(): void { }
 }

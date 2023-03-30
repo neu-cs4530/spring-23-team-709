@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Participant, Room } from 'twilio-video';
 
@@ -18,13 +19,17 @@ type SelectedParticipantProviderProps = {
 export function SelectedParticipantProvider({ room, children }: SelectedParticipantProviderProps) {
   const [selectedParticipant, _setSelectedParticipant] = useState<Participant | null>(null);
   const setSelectedParticipant = (participant: Participant) =>
-    _setSelectedParticipant(prevParticipant => (prevParticipant === participant ? null : participant));
+    _setSelectedParticipant(prevParticipant =>
+      prevParticipant === participant ? null : participant,
+    );
 
   useEffect(() => {
     if (room) {
       const onDisconnect = () => _setSelectedParticipant(null);
       const handleParticipantDisconnected = (participant: Participant) =>
-        _setSelectedParticipant(prevParticipant => (prevParticipant === participant ? null : prevParticipant));
+        _setSelectedParticipant(prevParticipant =>
+          prevParticipant === participant ? null : prevParticipant,
+        );
 
       room.on('disconnected', onDisconnect);
       room.on('participantDisconnected', handleParticipantDisconnected);
