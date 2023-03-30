@@ -2,3 +2,5 @@ src/components/VideoCall/VideoFrontend
 src/classes/DebugLogger.ts
 build
 public/virtualbackground
+src/components/VideoCall/VideoFrontend/components/VideoProvider/index.tsx
+src/

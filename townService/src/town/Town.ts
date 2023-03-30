@@ -307,20 +307,20 @@ export default class Town {
   }
 
   /**
-   * Creates a new viewing area in this town if there is not currently an active
-   * viewing area with the same ID. The viewing area ID must match the name of a
-   * viewing area that exists in this town's map, and the viewing area must not
+   * Creates a new listening area in this town if there is not currently an active
+   * listening area with the same ID. The listening area ID must match the name of a
+   * listening area that exists in this town's map, and the listening area must not
    * already have a video set.
    *
-   * If successful creating the viewing area, this method:
-   *    Adds any players who are in the region defined by the viewing area to it
-   *    Notifies all players in the town that the viewing area has been updated by
+   * If successful creating the listening area, this method:
+   *    Adds any players who are in the region defined by the listening area to it
+   *    Notifies all players in the town that the listening area has been updated by
    *      emitting an interactableUpdate event
    *
-   * @param viewingArea Information describing the viewing area to create.
+   * @param listeningArea Information describing the listening area to create.
    *
-   * @returns True if the viewing area was created or false if there is no known
-   * viewing area with the specified ID or if there is already an active viewing area
+   * @returns True if the listening area was created or false if there is no known
+   * listening area with the specified ID or if there is already an active listening area
    * with the specified ID or if there is no video URL specified
    */
   public addListeningArea(listeningArea: ListeningAreaModel): boolean {

@@ -166,15 +166,15 @@ export class TownsController extends Controller {
   }
 
   /**
-   * Creates a viewing area in a given town
+   * Creates a listening area in a given town
    *
-   * @param townID ID of the town in which to create the new viewing area
+   * @param townID ID of the town in which to create the new listening area
    * @param sessionToken session token of the player making the request, must
    *        match the session token returned when the player joined the town
-   * @param requestBody The new viewing area to create
+   * @param requestBody The new listening area to create
    *
    * @throws InvalidParametersError if the session token is not valid, or if the
-   *          viewing area could not be created
+   *          listening area could not be created
    */
   @Post('{townID}/listeningArea')
   @Response<InvalidParametersError>(400, 'Invalid values specified')

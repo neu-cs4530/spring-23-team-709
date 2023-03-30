@@ -206,7 +206,7 @@ export function isPosterSessionArea(interactable: Interactable): interactable is
 }
 
 export function isListeningArea(interactable: Interactable): interactable is ListeningArea {
-  return 'isPlaying' in interactable && !('elapsedTimeSec' in interactablee;
+  return 'isPlaying' in interactable && !('elapsedTimeSec' in interactable);
 }
 
 export function isConversationArea(interactable: Interactable): interactable is ConversationArea {

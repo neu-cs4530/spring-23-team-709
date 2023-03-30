@@ -18,8 +18,14 @@ import {
   ViewingArea as ViewingAreaModel,
   ListeningArea as ListeningAreaModel,
   PosterSessionArea as PosterSessionAreaModel,
+  ListeningArea,
 } from '../types/CoveyTownSocket';
-import { isConversationArea, isViewingArea, isPosterSessionArea } from '../types/TypeUtils';
+import {
+  isConversationArea,
+  isViewingArea,
+  isPosterSessionArea,
+  isListeningArea,
+} from '../types/TypeUtils';
 import ConversationAreaController from './ConversationAreaController';
 import PlayerController from './PlayerController';
 import ViewingAreaController from './ViewingAreaController';
@@ -327,11 +333,13 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     return this._listeningAreas;
   }
 
+  // eslint-disable-next-line @typescript-eslint/adjacent-overload-signatures
   public set viewingAreas(newViewingAreas: ViewingAreaController[]) {
     this._viewingAreas = newViewingAreas;
     this.emit('viewingAreasChanged', newViewingAreas);
   }
 
+  // eslint-disable-next-line @typescript-eslint/adjacent-overload-signatures
   public set listeningAreas(newListeningAreas: ListeningAreaController[]) {
     this._listeningAreas = newListeningAreas;
     this.emit('listeningAreasChanged', newListeningAreas);
@@ -556,6 +564,17 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   }
 
   /**
+   * Create a new viewing area, sending the request to the townService. Throws an error if the request
+   * is not successful. Does not immediately update local state about the new viewing area - it will be
+   * updated once the townService creates the area and emits an interactableUpdate
+   *
+   * @param newArea
+   */
+  async createListeningArea(newArea: ListeningAreaModel) {
+    await this._townsService.createListeningArea(this.townID, this.sessionToken, newArea);
+  }
+
+  /**
    * Create a new poster session area, sending the request to the townService. Throws an error if the request
    * is not successful. Does not immediately update local state about the new poster session area - it will be
    * updated once the townService creates the area and emits an interactableUpdate
@@ -651,6 +670,29 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   }
 
   /**
+   * Retrieve the listening area controller that corresponds to a listeningAreaModel, creating one if necessary
+   *
+   * @param listeningArea
+   * @returns
+   */
+  public getListeningAreaController(listeningArea: ListeningArea): ListeningAreaController {
+    const existingController = this._listeningAreas.find(
+      eachExistingArea => eachExistingArea.id === listeningArea.id,
+    );
+    if (existingController) {
+      return existingController;
+    } else {
+      const newController = new ListeningAreaController({
+        id: listeningArea.id,
+        isPlaying: false,
+        song: listeningArea.song,
+      });
+      this._listeningAreas.push(newController);
+      return newController;
+    }
+  }
+
+  /**
    * Retrieve the poster session area controller that corresponds to a posterSessionAreaModel, creating one if necessary
    *
    * @param posterSessionArea
@@ -683,6 +725,15 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
    */
   public emitViewingAreaUpdate(viewingArea: ViewingAreaController) {
     this._socket.emit('interactableUpdate', viewingArea.viewingAreaModel());
+  }
+
+  /**
+   * Emit a listening area update to the townService
+   * @param listeningArea The Listening Area Controller that is updated and should be emitted
+   *    with the event
+   */
+  public emitListeningAreaUpdate(listeningArea: ListeningAreaController) {
+    this._socket.emit('interactableUpdate', listeningArea.listeningAreaModel());
   }
 
   /**
