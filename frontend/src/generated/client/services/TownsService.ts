@@ -2,6 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { ConversationArea } from '../models/ConversationArea';
+import type { ListeningArea } from '../models/ListeningArea';
 import type { PosterSessionArea } from '../models/PosterSessionArea';
 import type { Town } from '../models/Town';
 import type { TownCreateParams } from '../models/TownCreateParams';
@@ -148,6 +149,37 @@ export class TownsService {
         return this.httpRequest.request({
             method: 'POST',
             url: '/towns/{townID}/viewingArea',
+            path: {
+                'townID': townId,
+            },
+            headers: {
+                'X-Session-Token': xSessionToken,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Invalid values specified`,
+            },
+        });
+    }
+
+    /**
+     * Creates a viewing area in a given town
+     * @param townId ID of the town in which to create the new viewing area
+     * @param xSessionToken session token of the player making the request, must
+     * match the session token returned when the player joined the town
+     * @param requestBody The new viewing area to create
+     * @returns void
+     * @throws ApiError
+     */
+    public createListeningArea(
+        townId: string,
+        xSessionToken: string,
+        requestBody: ListeningArea,
+    ): CancelablePromise<void> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/towns/{townID}/listeningArea',
             path: {
                 'townID': townId,
             },

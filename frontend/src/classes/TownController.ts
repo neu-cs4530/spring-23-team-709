@@ -6,6 +6,7 @@ import { io } from 'socket.io-client';
 import TypedEmitter from 'typed-emitter';
 import Interactable from '../components/Town/Interactable';
 import ViewingArea from '../components/Town/interactables/ViewingArea';
+import ListeningArea from '../components/Town/interactables/ListeningArea';
 import PosterSesssionArea from '../components/Town/interactables/PosterSessionArea';
 import { LoginController } from '../contexts/LoginControllerContext';
 import { TownsService, TownsServiceClient } from '../generated/client';
@@ -19,7 +20,12 @@ import {
   ListeningArea as ListeningAreaModel,
   PosterSessionArea as PosterSessionAreaModel,
 } from '../types/CoveyTownSocket';
-import { isConversationArea, isViewingArea, isPosterSessionArea } from '../types/TypeUtils';
+import {
+  isConversationArea,
+  isViewingArea,
+  isPosterSessionArea,
+  isListeningArea,
+} from '../types/TypeUtils';
 import ConversationAreaController from './ConversationAreaController';
 import PlayerController from './PlayerController';
 import ViewingAreaController from './ViewingAreaController';
@@ -323,13 +329,13 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     return this._viewingAreas;
   }
 
-  public get listeningAreas() {
-    return this._listeningAreas;
-  }
-
   public set viewingAreas(newViewingAreas: ViewingAreaController[]) {
     this._viewingAreas = newViewingAreas;
     this.emit('viewingAreasChanged', newViewingAreas);
+  }
+
+  public get listeningAreas() {
+    return this._listeningAreas;
   }
 
   public set listeningAreas(newListeningAreas: ListeningAreaController[]) {
@@ -555,6 +561,10 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     await this._townsService.createViewingArea(this.townID, this.sessionToken, newArea);
   }
 
+  async createListeningArea(newArea: ListeningAreaModel) {
+    await this._townsService.createListeningArea(this.townID, this.sessionToken, newArea);
+  }
+
   /**
    * Create a new poster session area, sending the request to the townService. Throws an error if the request
    * is not successful. Does not immediately update local state about the new poster session area - it will be
@@ -646,6 +656,23 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
         video: viewingArea.defaultVideoURL,
       });
       this._viewingAreas.push(newController);
+      return newController;
+    }
+  }
+
+  public getListeningAreaController(listeningArea: ListeningArea): ListeningAreaController {
+    const existingController = this._listeningAreas.find(
+      eachExistingArea => eachExistingArea.id === listeningArea.name,
+    );
+    if (existingController) {
+      return existingController;
+    } else {
+      const newController = new ListeningAreaController({
+        id: listeningArea.name,
+        isPlaying: false,
+        song: listeningArea.defaultSong,
+      });
+      this._listeningAreas.push(newController);
       return newController;
     }
   }
