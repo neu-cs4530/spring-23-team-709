@@ -171,10 +171,21 @@ export default function TownSelection(): JSX.Element {
   const handleSpotifyLogin = async () => {
     const clientID = '6090986dbddf45deab41b4a704cbf506';
     const clientSecret = '7d218af54e1e4a1e859dff272cb107d6';
-    const redirectURI = 'https://example.com/callback'; 
+
+    const base64AuthString = btoa(`${clientID}:${clientSecret}`);
+    const redirectURI = 'http://localhost:3000/'; 
     const scopes = 'user-read-private user-read-email user-library-read user-read-recently-played';
     const authEndpoint = 'https://accounts.spotify.com/authorize';
     const tokenEndpoint = 'https://accounts.spotify.com/api/token';
+
+    const authOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Basic ${base64AuthString}`
+      },
+      body: 'grant_type=client_credentials'
+    };
 
     const authURL = `${authEndpoint}?response_type=code&client_id=${clientID}&redirect_uri=${redirectURI}&scope=${scopes}`;
     const popupWindow = window.open(authURL, 'Popup', 'width=600,height=400');
@@ -184,23 +195,27 @@ export default function TownSelection(): JSX.Element {
         clearInterval(pollPopup);
         return;
       }
-  
+
       try {
         if (popupWindow.location.href.includes(redirectURI)) {
+          console.log('setting up params...');
+          /*
+          */
           const urlParams = new URLSearchParams(popupWindow.location.search);
+          console.log('getting code...');
           const code = urlParams.get('code');
-          console.log(code);
-          //popupWindow.close();
+          console.log(`CODE: ${code}`);
+          popupWindow.close();
 
           // Exchange authorization code for access token and refresh token
           const response = await fetch(tokenEndpoint, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
-              Authorization: `Basic ${btoa(`${clientID}:${clientSecret}`)}`,
+              'Authorization': `Basic ${btoa(`${clientID}:${clientSecret}`)}`,
             },
             body: new URLSearchParams({
-              grant_type: 'authorization_code',
+              grant_type: `authorization_code`,
               redirect_uri: redirectURI,
             }),
           });
@@ -208,73 +223,14 @@ export default function TownSelection(): JSX.Element {
           const data = await response.json();
           const { access_token, refresh_token } = data;
   
-          // Send access token to parent window
-          window.opener.postMessage({ access_token }, redirectURI);
-
           console.log(access_token, refresh_token);
+        } else {
+          console.log('not ready yet');
         }
       } catch (error) {
         console.log(error);
       }
     }, 1000);
-
-    /*
-    if (!spotifyName || spotifyName.length === 0) {
-      toast({
-        title: 'Unable to login to Spotify',
-        description: 'Please enter your Spotify username',
-        status: 'error',
-      });
-      return;
-    }
-    if (!spotifyPassword || spotifyPassword.length === 0) {
-      toast({
-        title: 'Unable to login to Spotify',
-        description: 'Please enter your Spotify password',
-        status: 'error',
-      });
-      return;
-    }
-    try {
-      const response = await fetch('', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: spotifyName, password: spotifyPassword }),
-      });
-      const data = await response.json();
-      console.log(data);
-      if (data.error) {
-        toast({
-          title: 'Unable to login to Spotify',
-          description: data.error,
-          status: 'error',
-        });
-      } else {
-        toast({
-          title: 'Successfully logged in to Spotify',
-          description: 'You can now play music in your town',
-          status: 'success',
-        });
-      }
-    } catch (err) {
-      if (err instanceof Error) {
-        toast({
-          title: 'Unable to connect to Spotify',
-          description: err.toString(),
-          status: 'error',
-        });
-      } else {
-        console.trace(err);
-        toast({
-          title: 'Unexpected error, see browser console for details.',
-          status: 'error',
-        });
-      }
-    }
-    */
-
   };
 
   return (
