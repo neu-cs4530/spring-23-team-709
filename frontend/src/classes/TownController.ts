@@ -329,17 +329,15 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     return this._viewingAreas;
   }
 
-  public get listeningAreas() {
-    return this._listeningAreas;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/adjacent-overload-signatures
   public set viewingAreas(newViewingAreas: ViewingAreaController[]) {
     this._viewingAreas = newViewingAreas;
     this.emit('viewingAreasChanged', newViewingAreas);
   }
 
-  // eslint-disable-next-line @typescript-eslint/adjacent-overload-signatures
+  public get listeningAreas() {
+    return this._listeningAreas;
+  }
+
   public set listeningAreas(newListeningAreas: ListeningAreaController[]) {
     this._listeningAreas = newListeningAreas;
     this.emit('listeningAreasChanged', newListeningAreas);

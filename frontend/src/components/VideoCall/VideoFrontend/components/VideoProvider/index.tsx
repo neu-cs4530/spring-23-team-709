@@ -47,7 +47,6 @@ export interface IVideoContext {
   setBackgroundSettings: (settings: BackgroundSettings) => void;
 }
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const VideoContext = createContext<IVideoContext>(null!);
 
 interface VideoProviderProps {
@@ -68,7 +67,7 @@ export function VideoProvider({
       console.log(`ERROR: ${error.message}`, error);
       onError(error);
     },
-    [onError],
+    [onError]
   );
 
   const {
@@ -92,15 +91,15 @@ export function VideoProvider({
     removeLocalVideoTrack,
     isSharingScreen,
     toggleScreenShare,
-    onDisconnect,
+    onDisconnect
   );
   useHandleTrackPublicationFailed(room, onError);
   useRestartAudioTrackOnDeviceChange(localTracks);
 
   const [isBackgroundSelectionOpen, setIsBackgroundSelectionOpen] = useState(false);
-  const videoTrack = localTracks.find(
-    track => !track.name.includes('screen') && track.kind === 'video',
-  ) as LocalVideoTrack | undefined;
+  const videoTrack = localTracks.find(track => !track.name.includes('screen') && track.kind === 'video') as
+    | LocalVideoTrack
+    | undefined;
   const [backgroundSettings, setBackgroundSettings] = useBackgroundSettings(videoTrack, room);
 
   return (
