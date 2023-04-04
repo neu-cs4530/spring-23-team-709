@@ -7,6 +7,7 @@ import Interactable from './Interactable';
 import ConversationArea from './interactables/ConversationArea';
 import Transporter from './interactables/Transporter';
 import ViewingArea from './interactables/ViewingArea';
+import ListeningArea from './interactables/ListeningArea';
 import PosterSessionArea from './interactables/PosterSessionArea';
 
 // Still not sure what the right type is here... "Interactable" doesn't do it
@@ -18,6 +19,8 @@ function interactableTypeForObjectType(type: string): any {
     return Transporter;
   } else if (type == 'ViewingArea') {
     return ViewingArea;
+  } else if (type == 'ListeningArea') {
+    return ListeningArea;
   } else if (type == 'PosterSessionArea') {
     return PosterSessionArea;
   } else {
