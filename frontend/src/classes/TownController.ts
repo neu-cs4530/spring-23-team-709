@@ -713,6 +713,15 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   }
 
   /**
+   * Emit a viewing area update to the townService
+   * @param listeningArea The Viewing Area Controller that is updated and should be emitted
+   *    with the event
+   */
+  public emitListeningAreaUpdate(listeningArea: ListeningAreaController) {
+    this._socket.emit('interactableUpdate', listeningArea.listeningAreaModel());
+  }
+
+  /**
    * Emit a poster session area update to the townService
    * @param posterSessionArea The Poster Session Area Controller that is updated and should be emitted
    *    with the event
