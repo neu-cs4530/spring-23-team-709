@@ -198,6 +198,9 @@ export default function TownSelection(): JSX.Element {
     };
     const searchResponse = await fetch('https://api.spotify.com/v1/me/player', searchOptions);
     const searchData = await searchResponse.json();
+    if (searchData.status === 401 || searchData.status === 403) {
+      console.error('key problem on getplaybackstate');
+    }
     await setSpotifyUserName(searchData.id);
     localStorage.setItem('spotifyUserName', searchData.id);
     console.log('getPlaybackState', searchData);
