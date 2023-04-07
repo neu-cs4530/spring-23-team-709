@@ -890,6 +890,26 @@ export function useViewingAreaController(viewingAreaID: string): ViewingAreaCont
 }
 
 /**
+ * A react hook to retrieve a listening area controller.
+ *
+ * This function will throw an error if the listening area controller does not exist.
+ *
+ * This hook relies on the TownControllerContext.
+ *
+ * @param listeningAreaID The ID of the listening area to retrieve the controller for
+ *
+ * @throws Error if there is no listening area controller matching the specifeid ID
+ */
+export function useListeningAreaController(listeningAreaID: string): ListeningAreaController {
+  const townController = useTownController();
+  const ret = townController.listeningAreas.find(eachArea => eachArea.id === listeningAreaID);
+  if (!ret) {
+    throw new Error(`Unable to locate listening area id ${listeningAreaID}`);
+  }
+  return ret;
+}
+
+/**
  * A react hook to retrieve a poster session area controller.
  *
  * This function will throw an error if the poster session area controller does not exist.

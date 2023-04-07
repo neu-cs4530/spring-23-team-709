@@ -579,12 +579,12 @@
                  "name":"Music Room",
                  "properties":[
                         {
-                         "name":"video",
+                         "name":"song",
                          "type":"string",
                          "value":"https:\/\/www.youtube.com\/watch?v=lo7ciECz6R4"
                         }],
                  "rotation":0,
-                 "type":"ViewingArea",
+                 "type":"ListeningArea",
                  "visible":true,
                  "width":386,
                  "x":3424,
