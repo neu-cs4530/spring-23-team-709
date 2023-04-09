@@ -7,7 +7,6 @@ import useTownController from '../../../hooks/useTownController';
 import SelectListeningModal from './SelectListeningModal';
 import ListeningAreaInteractable from './ListeningArea';
 
-const ALLOWED_DRIFT = 3;
 export class MockReactPlayer extends ReactPlayer {
   render(): React.ReactNode {
     return <></>;
@@ -31,7 +30,7 @@ export class MockReactPlayer extends ReactPlayer {
  * uses the TownController to emit a viewing area update.
  *
  * @param props: A single property 'controller', which is the ViewingAreaController corresponding to the
- *               current viewing area.
+ * current viewing area.
  */
 export function ListeningAreaSong({
   controller,
@@ -61,17 +60,16 @@ export function ListeningAreaSong({
             playerVars: {
               // disable skipping time via keyboard to avoid weirdness with chat, etc
               disablekb: 1,
-              autoplay: 1,
-              // modestbranding: 1,
+              autoplay: 1, // modestbranding: 1,
             },
           },
         }}
         playing={isPlaying}
         // onProgress={state => {
-        //   if (state.playedSeconds != 0 && state.playedSeconds != controller.elapsedTimeSec) {
-        //     controller.elapsedTimeSec = state.playedSeconds;
-        //     townController.emitListeningAreaUpdate(controller);
-        //   }
+        //   if (state.playedSeconds != 0 && state.playedSeconds != controller.elapsedTimeSec) {
+        //     controller.elapsedTimeSec = state.playedSeconds;
+        //     townController.emitListeningAreaUpdate(controller);
+        //   }
         // }}
         onPlay={() => {
           if (!controller.isPlaying) {
@@ -128,14 +126,12 @@ export function ListeningArea({
     };
   }, [listeningAreaController, townController]);
 
-  if (!listeningAreaSong) {
+  if (listeningAreaSong) {
     return (
       <SelectListeningModal
-        isOpen={selectIsOpen}
+        isOpen={true}
         close={() => {
-          setSelectIsOpen(false);
-          // forces game to emit "viewingArea" event again so that
-          // repoening the modal works as expected
+          setSelectIsOpen(false); // forces game to emit "viewingArea" event again so that // repoening the modal works as expected
           townController.interactEnd(listeningArea);
         }}
         listeningArea={listeningArea}
