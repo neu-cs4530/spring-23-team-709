@@ -713,6 +713,15 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   }
 
   /**
+   * Emit a viewing area update to the townService
+   * @param listeningArea The Viewing Area Controller that is updated and should be emitted
+   *    with the event
+   */
+  public emitListeningAreaUpdate(listeningArea: ListeningAreaController) {
+    this._socket.emit('interactableUpdate', listeningArea.listeningAreaModel());
+  }
+
+  /**
    * Emit a poster session area update to the townService
    * @param posterSessionArea The Poster Session Area Controller that is updated and should be emitted
    *    with the event
@@ -876,6 +885,26 @@ export function useViewingAreaController(viewingAreaID: string): ViewingAreaCont
   const ret = townController.viewingAreas.find(eachArea => eachArea.id === viewingAreaID);
   if (!ret) {
     throw new Error(`Unable to locate viewing area id ${viewingAreaID}`);
+  }
+  return ret;
+}
+
+/**
+ * A react hook to retrieve a listening area controller.
+ *
+ * This function will throw an error if the listening area controller does not exist.
+ *
+ * This hook relies on the TownControllerContext.
+ *
+ * @param listeningAreaID The ID of the listening area to retrieve the controller for
+ *
+ * @throws Error if there is no listening area controller matching the specifeid ID
+ */
+export function useListeningAreaController(listeningAreaID: string): ListeningAreaController {
+  const townController = useTownController();
+  const ret = townController.listeningAreas.find(eachArea => eachArea.id === listeningAreaID);
+  if (!ret) {
+    throw new Error(`Unable to locate listening area id ${listeningAreaID}`);
   }
   return ret;
 }
