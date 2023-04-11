@@ -14,6 +14,10 @@ export default class ListeningArea extends Interactable {
     return this._defaultSong;
   }
 
+  set defaultSong(value: string) {
+    this._defaultSong = value;
+  }
+
   addedToScene() {
     super.addedToScene();
     this.setTintFill();

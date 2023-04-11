@@ -1,11 +1,13 @@
 import { Container } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
+import { SpotifyWebApi } from 'spotify-web-api-ts';
 import { useInteractable, useListeningAreaController } from '../../../classes/TownController';
 import ListeningAreaController from '../../../classes/ListeningAreaController';
 import useTownController from '../../../hooks/useTownController';
 import SelectListeningModal from './SelectListeningModal';
 import ListeningAreaInteractable from './ListeningArea';
+import SpotifyPlayer from './SpotifyPlayer';
 
 export class MockReactPlayer extends ReactPlayer {
   render(): React.ReactNode {
@@ -66,9 +68,9 @@ export function ListeningAreaSong({
         }}
         playing={isPlaying}
         // onProgress={state => {
-        //   if (state.playedSeconds != 0 && state.playedSeconds != controller.elapsedTimeSec) {
-        //     controller.elapsedTimeSec = state.playedSeconds;
-        //     townController.emitListeningAreaUpdate(controller);
+        // if (state.playedSeconds != 0 && state.playedSeconds != controller.elapsedTimeSec) {
+        // controller.elapsedTimeSec = state.playedSeconds;
+        // townController.emitListeningAreaUpdate(controller);
         //   }
         // }}
         onPlay={() => {
