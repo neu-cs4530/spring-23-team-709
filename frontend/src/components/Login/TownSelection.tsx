@@ -47,7 +47,7 @@ export default function TownSelection(): JSX.Element {
   const base64AuthString = btoa(`${clientID}:${clientSecret}`);
   const redirectURI = 'http://localhost:3000/';
   const scopes =
-    'user-read-private user-read-email user-library-read user-read-recently-played playlist-modify-public playlist-modify-private streaming playlist-read-collaborative user-top-read user-read-recently-played';
+    'user-read-private user-read-email user-library-read user-read-recently-played playlist-modify-public playlist-modify-private streaming playlist-read-collaborative user-top-read user-read-recently-played user-read-playback-state user-modify-playback-state';
   const authEndpoint = 'https://accounts.spotify.com/authorize';
   const tokenEndpoint = 'https://accounts.spotify.com/api/token';
 
@@ -190,6 +190,22 @@ export default function TownSelection(): JSX.Element {
     console.log('getCurrentUser', searchData);
   };
 
+  const getPlaybackState = async (access_token: string) => {
+    const searchOptions = {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    };
+    const searchResponse = await fetch('https://api.spotify.com/v1/me/player', searchOptions);
+    const searchData = await searchResponse.json();
+    if (searchData.status === 401 || searchData.status === 403) {
+      console.error('key problem on getplaybackstate');
+    }
+    await setSpotifyUserName(searchData.id);
+    localStorage.setItem('spotifyUserName', searchData.id);
+    console.log('getPlaybackState', searchData);
+  };
+
   const getUserProfile = async (access_token: string, userId: string) => {
     const searchOptions = {
       headers: {
@@ -262,6 +278,31 @@ export default function TownSelection(): JSX.Element {
     console.log('createPlaylist:', createData);
   };
 
+  // start or resume playback
+  const startResumePlayback = async (
+    access_token: string,
+    context_uri: string,
+    offset: object,
+    position_ms: integer,
+  ) => {
+    const createOptions = {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${access_token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        context_uri: `${context_uri}`,
+        offset: offset,
+        position_ms: position_ms,
+      }),
+    };
+
+    const createResponse = await fetch(`https://api.spotify.com/v1/me/player/play`, createOptions);
+    const createData = await createResponse.json();
+    console.log('start/resume playback', createData);
+  };
+
   /* Spotify Login
    * using the spotify username and password, we can get the user's access token and login to spotify
    */
@@ -303,6 +344,7 @@ export default function TownSelection(): JSX.Element {
 
           //console.log(`Access token: ${access_token}`, `\nRefresh token: ${refresh_token}`);
           await getCurrentUser(access_token);
+          await getPlaybackState(access_token);
           await setsSpotifyResponseData(data);
           await setSpotifyAccessToken(access_token);
           await setSpotifyRefreshToken(refresh_token);
@@ -326,6 +368,7 @@ export default function TownSelection(): JSX.Element {
 
     if (accessToken !== null && spUserName !== null) {
       getCurrentUser(spotifyAccessToken);
+      getPlaybackState(spotifyAccessToken);
       console.log('Spotify access token 1:', accessToken);
       console.log('Username:', spUserName);
 
@@ -336,6 +379,10 @@ export default function TownSelection(): JSX.Element {
       getTopItems(accessToken, 'tracks');
 
       createPlaylist(accessToken, spUserName, 'test playlist', 'test description', false, false);
+      const offsetPosition = {
+        position: 8,
+      };
+      startResumePlayback(accessToken, 'spotify:album:5MS3MvWHJ3lOZPLiMxzOU6', offsetPosition, 0);
     }
     //console.log('A token:', spotifyResponseData);
     /*
