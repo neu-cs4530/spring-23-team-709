@@ -1,4 +1,5 @@
 /townService/node_modules/
 /frontend/node_modules/
-.env
+/shared/node_modules/
 node_modules
+.env

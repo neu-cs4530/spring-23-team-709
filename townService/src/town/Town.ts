@@ -15,11 +15,13 @@ import {
   SocketData,
   ViewingArea as ViewingAreaModel,
   PosterSessionArea as PosterSessionAreaModel,
+  ListeningArea as ListeningAreaModel,
 } from '../types/CoveyTownSocket';
 import ConversationArea from './ConversationArea';
 import InteractableArea from './InteractableArea';
 import ViewingArea from './ViewingArea';
 import PosterSessionArea from './PosterSessionArea';
+import ListeningArea from './ListeningArea';
 
 /**
  * The Town class implements the logic for each town: managing the various events that
@@ -305,6 +307,36 @@ export default class Town {
   }
 
   /**
+   * Creates a new viewing area in this town if there is not currently an active
+   * viewing area with the same ID. The viewing area ID must match the name of a
+   * viewing area that exists in this town's map, and the viewing area must not
+   * already have a video set.
+   *
+   * If successful creating the viewing area, this method:
+   *    Adds any players who are in the region defined by the viewing area to it
+   *    Notifies all players in the town that the viewing area has been updated by
+   *      emitting an interactableUpdate event
+   *
+   * @param viewingArea Information describing the viewing area to create.
+   *
+   * @returns True if the viewing area was created or false if there is no known
+   * viewing area with the specified ID or if there is already an active viewing area
+   * with the specified ID or if there is no video URL specified
+   */
+  public addListeningArea(listeningArea: ListeningAreaModel): boolean {
+    const area = this._interactables.find(
+      eachArea => eachArea.id === listeningArea.id,
+    ) as ListeningArea;
+    if (!area || !listeningArea.song || area.song) {
+      return false;
+    }
+    area.updateModel(listeningArea);
+    area.addPlayersWithinBounds(this._players);
+    this._broadcastEmitter.emit('interactableUpdate', area.toModel());
+    return true;
+  }
+
+  /**
    * Creates a new poster session area in this town if there is not currently an active
    * poster session area with the same ID. The poster session area ID must match the name of a
    * poster session area that exists in this town's map, and the poster session area must not
@@ -410,6 +442,12 @@ export default class Town {
         ViewingArea.fromMapObject(eachViewingAreaObject, this._broadcastEmitter),
       );
 
+    const listeningAreas = objectLayer.objects
+      .filter(eachObject => eachObject.type === 'ListeningArea')
+      .map(eachListeningAreaObject =>
+        ListeningArea.fromMapObject(eachListeningAreaObject, this._broadcastEmitter),
+      );
+
     const conversationAreas = objectLayer.objects
       .filter(eachObject => eachObject.type === 'ConversationArea')
       .map(eachConvAreaObj =>
@@ -423,6 +461,7 @@ export default class Town {
     this._interactables = this._interactables
       .concat(viewingAreas)
       .concat(conversationAreas)
+      .concat(listeningAreas)
       .concat(posterSessionAreas);
     this._validateInteractables();
   }

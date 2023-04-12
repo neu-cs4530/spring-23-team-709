@@ -23,7 +23,13 @@ export function initializeAnalyser(stream: MediaStream) {
   return analyser;
 }
 
-function AudioLevelIndicator({ audioTrack, color = 'white' }: { audioTrack?: AudioTrack; color?: string }) {
+function AudioLevelIndicator({
+  audioTrack,
+  color = 'white',
+}: {
+  audioTrack?: AudioTrack;
+  color?: string;
+}) {
   const SVGRectRef = useRef<SVGRectElement>(null);
   const [analyser, setAnalyser] = useState<AnalyserNode>();
   const isTrackEnabled = useIsTrackEnabled(audioTrack as LocalAudioTrack | RemoteAudioTrack);

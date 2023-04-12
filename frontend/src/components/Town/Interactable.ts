@@ -5,6 +5,7 @@ import TownGameScene from './TownGameScene';
 export type KnownInteractableTypes =
   | 'conversationArea'
   | 'viewingArea'
+  | 'listeningArea'
   | 'transporter'
   | 'posterSessionArea';
 

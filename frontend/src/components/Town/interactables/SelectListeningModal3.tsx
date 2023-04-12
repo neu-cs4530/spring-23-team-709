@@ -13,27 +13,27 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useViewingAreaController } from '../../../classes/TownController';
+import { useListeningAreaController } from '../../../classes/TownController';
 import useTownController from '../../../hooks/useTownController';
-import { ViewingArea as ViewingAreaModel } from '../../../types/CoveyTownSocket';
-import ViewingArea from './ViewingArea';
+import { ListeningArea as ListeningAreaModel } from '../../../types/CoveyTownSocket';
+import ListeningArea from './ListeningArea';
 
-export default function SelectVideoModal({
+export default function SelectListeningModal({
   isOpen,
   close,
-  viewingArea,
+  listeningArea,
 }: {
   isOpen: boolean;
   close: () => void;
-  viewingArea: ViewingArea;
+  listeningArea: ListeningArea;
 }): JSX.Element {
   const coveyTownController = useTownController();
-  const viewingAreaController = useViewingAreaController(viewingArea?.name);
+  const listeningAreaController = useListeningAreaController(listeningArea?.name);
 
-  const [video, setVideo] = useState<string>(viewingArea?.defaultVideoURL || '');
+  const [song, setSong] = useState<string>(listeningArea?.defaultSong || '');
 
   useEffect(() => {
-    console.log('Got Here Video');
+    console.log('Got Here');
     if (isOpen) {
       coveyTownController.pause();
     } else {
@@ -48,25 +48,24 @@ export default function SelectVideoModal({
 
   const toast = useToast();
 
-  const createViewingArea = useCallback(async () => {
-    if (video && viewingAreaController) {
-      const request: ViewingAreaModel = {
-        id: viewingAreaController.id,
-        video,
+  const createListeningArea = useCallback(async () => {
+    if (song && listeningAreaController) {
+      const request: ListeningAreaModel = {
+        id: listeningAreaController.id,
+        song,
         isPlaying: true,
-        elapsedTimeSec: 0,
       };
       try {
-        await coveyTownController.createViewingArea(request);
+        await coveyTownController.createListeningArea(request);
         toast({
-          title: 'Video set!',
+          title: 'Song set!',
           status: 'success',
         });
         coveyTownController.unPause();
       } catch (err) {
         if (err instanceof Error) {
           toast({
-            title: 'Unable to set video URL',
+            title: 'Unable to set song URL',
             description: err.toString(),
             status: 'error',
           });
@@ -79,7 +78,7 @@ export default function SelectVideoModal({
         }
       }
     }
-  }, [video, coveyTownController, viewingAreaController, toast]);
+  }, [song, coveyTownController, listeningAreaController, toast]);
 
   return (
     <Modal
@@ -90,27 +89,22 @@ export default function SelectVideoModal({
       }}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Pick a video to watch in {viewingAreaController?.id} </ModalHeader>
+        <ModalHeader>Pick a song to listen to {listeningAreaController?.id} </ModalHeader>
         <ModalCloseButton />
         <form
           onSubmit={ev => {
             ev.preventDefault();
-            createViewingArea();
+            createListeningArea();
           }}>
           <ModalBody pb={6}>
             <FormControl>
-              <FormLabel htmlFor='video'>Video URL</FormLabel>
-              <Input
-                id='video'
-                name='video'
-                value={video}
-                onChange={e => setVideo(e.target.value)}
-              />
+              <FormLabel htmlFor='song'> Song </FormLabel>
+              <Input id='song' name='song' value={song} onChange={e => setSong(e.target.value)} />
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme='blue' mr={3} onClick={createViewingArea}>
-              Set video
+            <Button colorScheme='blue' mr={3} onClick={createListeningArea}>
+              Set song
             </Button>
             <Button onClick={closeModal}>Cancel</Button>
           </ModalFooter>
