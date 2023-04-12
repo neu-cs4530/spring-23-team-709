@@ -50,7 +50,6 @@
     "dependencies": {
         "@types/ramda": "^0.27.34",
         "ramda": "^0.27.1",
-        "spotify-web-api-ts": "^1.4.5",
         "typescript-is": "^0.17.0"
     },
     "files": [
