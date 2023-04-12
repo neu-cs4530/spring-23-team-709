@@ -38,7 +38,6 @@ export function getClientID(): string {
 }
 
 export function setClientSecret(secret: string) {
-  console.log('setting client secret to ' + secret);
   clientSecretSet = secret;
 }
 
@@ -63,8 +62,7 @@ export default function SelectListeningModal({
 
   const clientID = getClientID();
   const clientSecret = getClientSecret();
-
-  const redirectURI = 'http://localhost:3000/';
+  const redirectURI = window.location.href;
   const scopes =
     'user-read-private user-read-email user-library-read user-read-recently-played playlist-modify-public playlist-modify-private streaming playlist-read-collaborative user-top-read user-read-recently-played user-read-playback-state user-modify-playback-state';
   const authEndpoint = 'https://accounts.spotify.com/authorize';
@@ -142,7 +140,6 @@ export default function SelectListeningModal({
   }, [coveyTownController, isOpen]);
 
   useEffect(() => {
-    console.log('here in use effect');
     const setURI = (uri: string | undefined) => {
       if (!uri) {
         coveyTownController.interactableEmitter.emit('endIteraction', listeningAreaController);
@@ -169,9 +166,7 @@ export default function SelectListeningModal({
         isPlaying: true,
       };
       try {
-        console.log('Request: ', request);
         await coveyTownController.createListeningArea(request);
-        console.log('where is problem');
         toast({
           title: 'Song set!',
           status: 'success',
@@ -246,7 +241,6 @@ export default function SelectListeningModal({
   };
 
   const playSong = async (track: string) => {
-    console.log(track);
     const success = await spotify.player.play({
       uris: [track],
     });
@@ -265,7 +259,6 @@ export default function SelectListeningModal({
       const userID = user.id;
       const playlist = await spotify.playlists.createPlaylist(userID, listeningArea.name);
       setAreaPlaylist(playlist);
-      console.log(playlist);
     } else {
       toast({
         title: 'Playlist already created',
@@ -307,8 +300,6 @@ export default function SelectListeningModal({
       const currTrack = typeof track === 'string' ? track : track.item;
       if (currTrack) {
         const currURI = typeof currTrack === 'string' ? currTrack : currTrack.uri;
-        console.log(currURI);
-        console.log(listeningAreaSong);
         setSong(currURI);
         listeningAreaController.song = currURI;
         coveyTownController.emitListeningAreaUpdate(listeningAreaController);
@@ -329,10 +320,6 @@ export default function SelectListeningModal({
   };
 
   const handlePlayListeningAreaSong = async () => {
-    console.log(listeningArea.defaultSong);
-    console.log(song);
-    console.log(listeningAreaController.song);
-    console.log(listeningAreaSong);
     const playURI = listeningAreaController.song
       ? listeningAreaController.song
       : listeningArea.defaultSong;
