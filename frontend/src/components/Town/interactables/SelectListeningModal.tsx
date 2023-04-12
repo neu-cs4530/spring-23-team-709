@@ -62,7 +62,7 @@ export default function SelectListeningModal({
 
   const clientID = getClientID();
   const clientSecret = getClientSecret();
-  const redirectURI = window.location.href;
+  const redirectURI = 'http://localhost:3000/';
   const scopes =
     'user-read-private user-read-email user-library-read user-read-recently-played playlist-modify-public playlist-modify-private streaming playlist-read-collaborative user-top-read user-read-recently-played user-read-playback-state user-modify-playback-state';
   const authEndpoint = 'https://accounts.spotify.com/authorize';
@@ -118,7 +118,10 @@ export default function SelectListeningModal({
       }
     }, 1000);
   };
-  const spotify = new SpotifyWebApi({ accessToken: spotifyAccessToken });
+  const spotify = new SpotifyWebApi({
+    accessToken: spotifyAccessToken,
+  });
+
   const coveyTownController = useTownController();
   const listeningAreaController = useListeningAreaController(listeningArea?.name);
 
