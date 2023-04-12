@@ -84,7 +84,7 @@ export default function SelectListeningModal({
 
           console.log(data); // eslint-disable-next-line @typescript-eslint/naming-convention
 
-          const { access_token, refresh_token } = data;
+          const { access_token, refresh_token } = data; // eslint-disable-line
 
           await setsSpotifyResponseData(data);
           await setSpotifyAccessToken(access_token);
