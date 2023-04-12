@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import React from 'react';
@@ -72,6 +73,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function ParticipantList() {
   // const classes = useStyles();
   const { room } = useVideoContext();
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const localParticipant = room!.localParticipant;
   const participants = useParticipants();
   const [selectedParticipant, setSelectedParticipant] = useSelectedParticipant();
