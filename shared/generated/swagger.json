@@ -526,7 +526,11 @@
 						}
 					},
 					{
+<<<<<<< HEAD
 						"description": "session token of the player making the request, must\r\nmatch the session token returned when the player joined the town",
+=======
+						"description": "session token of the player making the request, must\nmatch the session token returned when the player joined the town",
+>>>>>>> 661398c40dbaad8572a36a95bcfcec9436fe6072
 						"in": "header",
 						"name": "X-Session-Token",
 						"required": true,

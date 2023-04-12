@@ -83,7 +83,6 @@ export default function SelectListeningModal({
           const data = await response.json();
 
           console.log(data); // eslint-disable-next-line @typescript-eslint/naming-convention
-
           const { access_token, refresh_token } = data;  // eslint-disable-line
 
           await setsSpotifyResponseData(data);
@@ -310,7 +309,9 @@ export default function SelectListeningModal({
                 <Text> Queue </Text>
                 <List overflowY='scroll' maxH='100px'>
                   {queue.map(song => (
-                    <ListItem key={song.id}>{song.name} - {song.artists[0].name}</ListItem>
+                    <ListItem key={song.id}>
+                      {song.name} - {song.artists[0].name}
+                    </ListItem>
                   ))}
                 </List>
               </Box>

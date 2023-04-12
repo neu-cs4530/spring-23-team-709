@@ -1,5 +1,9 @@
 /townService/node_modules/
 /frontend/node_modules/
 /shared/node_modules/
+<<<<<<< HEAD
 node_modules
 .env
+=======
+.env
+>>>>>>> 661398c40dbaad8572a36a95bcfcec9436fe6072

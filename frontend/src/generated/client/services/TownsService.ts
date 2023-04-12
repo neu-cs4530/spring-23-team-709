@@ -167,6 +167,7 @@ requestBody: ViewingArea,
      * Creates a viewing area in a given town
      * @param townId ID of the town in which to create the new viewing area
      * @param xSessionToken session token of the player making the request, must
+<<<<<<< HEAD
  * match the session token returned when the player joined the town
      * @param requestBody The new viewing area to create
      * @returns void 
@@ -177,6 +178,18 @@ townId: string,
 xSessionToken: string,
 requestBody: ListeningArea,
 ): CancelablePromise<void> {
+=======
+     * match the session token returned when the player joined the town
+     * @param requestBody The new viewing area to create
+     * @returns void
+     * @throws ApiError
+     */
+    public createListeningArea(
+        townId: string,
+        xSessionToken: string,
+        requestBody: ListeningArea,
+    ): CancelablePromise<void> {
+>>>>>>> 661398c40dbaad8572a36a95bcfcec9436fe6072
         return this.httpRequest.request({
             method: 'POST',
             url: '/towns/{townID}/listeningArea',

@@ -7,3 +7,7 @@ export type ListeningArea = {
     song?: string;
     isPlaying: boolean;
 };
+<<<<<<< HEAD
+=======
+
+>>>>>>> 661398c40dbaad8572a36a95bcfcec9436fe6072
