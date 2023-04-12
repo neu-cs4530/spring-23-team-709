@@ -23,6 +23,12 @@ import { Town } from '../../generated/client';
 import useLoginController from '../../hooks/useLoginController';
 import TownController from '../../classes/TownController';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
+import {
+  setClientID,
+  setClientSecret,
+  getClientID,
+  getClientSecret,
+} from '../Town/interactables/SelectListeningModal';
 
 export default function TownSelection(): JSX.Element {
   const [userName, setUserName] = useState<string>('');
@@ -169,7 +175,6 @@ export default function TownSelection(): JSX.Element {
             <Heading as='h2' size='lg'>
               Select a username
             </Heading>
-
             <FormControl>
               <FormLabel htmlFor='name'>Name</FormLabel>
               <Input
@@ -178,6 +183,31 @@ export default function TownSelection(): JSX.Element {
                 placeholder='Your name'
                 value={userName}
                 onChange={event => setUserName(event.target.value)}
+              />
+            </FormControl>
+          </Box>
+          <Box p='4' borderWidth='1px' borderRadius='lg'>
+            <Heading as='h2' size='lg'>
+              Set Client ID and Secret
+            </Heading>
+            <FormControl>
+              <FormLabel htmlFor='ID'>Client ID</FormLabel>
+              <Input
+                autoFocus
+                name='ID'
+                placeholder='Your Spotify Client ID'
+                value={getClientID()}
+                onChange={event => setClientID(event.target.value)}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor='secret'>Client Secret</FormLabel>
+              <Input
+                autoFocus
+                name='secret'
+                placeholder='Your Spotify Client Secret'
+                value={getClientSecret()}
+                onChange={event => setClientSecret(event.target.value)}
               />
             </FormControl>
           </Box>

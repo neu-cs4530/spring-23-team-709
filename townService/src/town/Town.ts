@@ -4,7 +4,7 @@ import { BroadcastOperator } from 'socket.io';
 import IVideoClient from '../lib/IVideoClient';
 import Player from '../lib/Player';
 import TwilioVideo from '../lib/TwilioVideo';
-import { isPosterSessionArea, isViewingArea } from '../TestUtils';
+import { isPosterSessionArea, isViewingArea, isListeningArea } from '../TestUtils';
 import {
   ChatMessage,
   ConversationArea as ConversationAreaModel,
@@ -163,6 +163,14 @@ export default class Town {
         );
         if (viewingArea) {
           (viewingArea as ViewingArea).updateModel(update);
+        }
+      } else if (isListeningArea(update)) {
+        newPlayer.townEmitter.emit('interactableUpdate', update);
+        const listeningArea = this._interactables.find(
+          eachInteractable => eachInteractable.id === update.id,
+        );
+        if (listeningArea) {
+          (listeningArea as ListeningArea).updateModel(update);
         }
       } else if (isPosterSessionArea(update)) {
         // forward interactableUpdate

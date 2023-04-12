@@ -33,7 +33,6 @@ export default function SelectVideoModal({
   const [video, setVideo] = useState<string>(viewingArea?.defaultVideoURL || '');
 
   useEffect(() => {
-    console.log('Got Here Video');
     if (isOpen) {
       coveyTownController.pause();
     } else {

@@ -15,6 +15,10 @@ import {
   ModalHeader,
   ModalOverlay,
   useToast,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useListeningAreaController } from '../../../classes/TownController';
@@ -23,7 +27,27 @@ import { ListeningArea as ListeningAreaModel } from '../../../types/CoveyTownSoc
 import ListeningArea from './ListeningArea';
 import { SpotifyWebApi } from 'spotify-web-api-ts';
 import { Card } from '@material-ui/core';
-import { Track } from 'spotify-web-api-ts/types/types/SpotifyObjects';
+import { Playlist, Track } from 'spotify-web-api-ts/types/types/SpotifyObjects';
+
+let clientIDSet = '';
+let clientSecretSet = '';
+
+export function setClientID(id: string) {
+  clientIDSet = id;
+}
+
+export function getClientID(): string {
+  return clientIDSet;
+}
+
+export function setClientSecret(secret: string) {
+  console.log('setting client secret to ' + secret);
+  clientSecretSet = secret;
+}
+
+export function getClientSecret(): string {
+  return clientSecretSet;
+}
 
 export default function SelectListeningModal({
   isOpen,
@@ -37,14 +61,12 @@ export default function SelectListeningModal({
   const [spotifyResponseData, setsSpotifyResponseData] = useState<object | null>(null);
   const [spotifyAccessToken, setSpotifyAccessToken] = useState<string>('a');
   const [spotifyRefreshToken, setSpotifyRefreshToken] = useState<string>('r');
-  const [spotifyUserName, setSpotifyUserName] = useState<string>('');
 
   const toast = useToast();
 
-  const clientID = 'a8996d7026884859b477604c26cbb5ed';
-  const clientSecret = '7ae24d76f1064542b3f163b1abdc9463';
+  const clientID = getClientID();
+  const clientSecret = getClientSecret();
 
-  const base64AuthString = btoa(`${clientID}:${clientSecret}`);
   const redirectURI = 'http://localhost:3000/';
   const scopes =
     'user-read-private user-read-email user-library-read user-read-recently-played playlist-modify-public playlist-modify-private streaming playlist-read-collaborative user-top-read user-read-recently-played user-read-playback-state user-modify-playback-state';
@@ -82,8 +104,9 @@ export default function SelectListeningModal({
 
           const data = await response.json();
 
-          console.log(data); // eslint-disable-next-line @typescript-eslint/naming-convention
+          console.log(data);
 
+          // eslint-disable-next-line @typescript-eslint/naming-convention
           const { access_token, refresh_token } = data;
 
           await setsSpotifyResponseData(data);
@@ -105,18 +128,35 @@ export default function SelectListeningModal({
   const listeningAreaController = useListeningAreaController(listeningArea?.name);
 
   const [songSet, setSongSet] = useState<string>(listeningArea?.defaultSong || '');
-  const [songQueue, setSongQueue] = useState<string>(listeningArea?.defaultSong || '');
-  const [areaSong, setAreaSong] = useState<string>(listeningArea?.defaultSong || '');
+  const [song, setSong] = useState<string>(listeningArea?.defaultSong || '');
+  const [listeningAreaSong, setListeningAreaSong] = useState(listeningAreaController.song);
   const [searchTracks, setSearchTracks] = useState<Track[]>([]);
   const [queue, setQueue] = useState<Track[]>([]);
+  const [areaPlaylist, setAreaPlaylist] = useState<Playlist>();
 
   useEffect(() => {
     if (isOpen) {
+      handleSpotifyLogin();
       coveyTownController.pause();
     } else {
       coveyTownController.unPause();
     }
   }, [coveyTownController, isOpen]);
+
+  useEffect(() => {
+    console.log('here in use effect');
+    const setURI = (uri: string | undefined) => {
+      if (!uri) {
+        coveyTownController.interactableEmitter.emit('endIteraction', listeningAreaController);
+      } else {
+        setListeningAreaSong(uri);
+      }
+    };
+    listeningAreaController.addListener('songChange', setURI);
+    return () => {
+      listeningAreaController.removeListener('songChange', setURI);
+    };
+  }, [listeningAreaController, coveyTownController]);
 
   const closeModal = useCallback(() => {
     coveyTownController.unPause();
@@ -124,14 +164,16 @@ export default function SelectListeningModal({
   }, [coveyTownController, close]);
 
   const createListeningArea = useCallback(async () => {
-    if (areaSong && listeningAreaController) {
+    if (song && listeningAreaController) {
       const request: ListeningAreaModel = {
         id: listeningAreaController.id,
-        song: areaSong,
+        song,
         isPlaying: true,
       };
       try {
+        console.log('Request: ', request);
         await coveyTownController.createListeningArea(request);
+        console.log('where is problem');
         toast({
           title: 'Song set!',
           status: 'success',
@@ -153,7 +195,7 @@ export default function SelectListeningModal({
         }
       }
     }
-  }, [areaSong, coveyTownController, listeningAreaController, toast]);
+  }, [song, coveyTownController, listeningAreaController, toast]);
 
   const [isPaused, setIsPaused] = useState(false);
 
@@ -180,10 +222,22 @@ export default function SelectListeningModal({
     const success = await spotify.player.setShuffle(true);
     console.log(success);
   };
-  const handleGetSongClick = async () => {
-    const { name } = await spotify.tracks.getTrack('6LN15vwkSE1ZiA8IdBjl7k');
+  const handleGetTopClick = async () => {
+    const topSongs = await spotify.personalization.getMyTopTracks();
+    const top5Songs = topSongs.items.slice(0, 5);
 
-    console.log(name);
+    const topArtists = await spotify.personalization.getMyTopArtists();
+    const top5Artists = topArtists.items.slice(0, 5);
+    const toastVal =
+      top5Songs.map(track => track.name).join(', ') +
+      '\n' +
+      top5Artists.map(artist => artist.name).join(', ');
+
+    toast({
+      title: 'Top 5 Songs and Artists',
+      description: toastVal,
+      status: 'success',
+    });
   };
 
   const searchSong = async () => {
@@ -193,26 +247,71 @@ export default function SelectListeningModal({
     }
   };
 
-  const playSong = async (song: string) => {
-    console.log(song);
+  const playSong = async (track: string) => {
+    console.log(track);
     const success = await spotify.player.play({
-      uris: [song],
+      uris: [track],
     });
     console.log(success);
   };
 
-  const queueSong = async (ev: Event, track: Track) => {
-    ev.preventDefault();
+  const queueSong = async (track: Track) => {
     const success = await spotify.player.addToQueue(track.uri);
     console.log(success);
     setQueue([...queue, track]);
-    // } else {
-    //   toast({
-    //     title: 'Song not found',
-    //     status: 'error',
-    //   });
-    // }
   };
+
+  const handleCreatePlaylist = async () => {
+    if (!areaPlaylist) {
+      const user = await spotify.users.getMe();
+      const userID = user.id;
+      const playlist = await spotify.playlists.createPlaylist(userID, listeningArea.name);
+      setAreaPlaylist(playlist);
+      console.log(playlist);
+    } else {
+      toast({
+        title: 'Playlist already created',
+        status: 'error',
+      });
+    }
+  };
+
+  const setPlaylist = async (playlistName: string) => {
+    if (areaPlaylist) {
+      const success = await spotify.playlists.addItemToPlaylist(areaPlaylist.id, playlistName);
+      const playlist = await spotify.playlists.getPlaylist(areaPlaylist.id);
+      setAreaPlaylist(playlist);
+      console.log(success);
+    } else {
+      toast({
+        title: 'No playlist created',
+        status: 'error',
+      });
+    }
+  };
+
+  const queuePlaylist = async () => {
+    if (areaPlaylist?.tracks.items.length) {
+      for (let i = 0; i < areaPlaylist?.tracks.items.length; i++) {
+        queueSong(areaPlaylist?.tracks.items[i].track as Track);
+      }
+    }
+  };
+
+  const setPlaylistTo = async (playlistName: string) => {
+    if (areaPlaylist) {
+      const success = await spotify.playlists.addItemToPlaylist(areaPlaylist.id, playlistName);
+      const playlist = await spotify.playlists.getPlaylist(areaPlaylist.id);
+      setAreaPlaylist(playlist);
+      console.log(success);
+    } else {
+      toast({
+        title: 'No playlist created',
+        status: 'error',
+      });
+    }
+  };
+
   const handleSetListeningAreaSong = async () => {
     const track = await spotify.player.getCurrentlyPlayingTrack();
     if (track) {
@@ -220,9 +319,11 @@ export default function SelectListeningModal({
       if (currTrack) {
         const currURI = typeof currTrack === 'string' ? currTrack : currTrack.uri;
         console.log(currURI);
+        console.log(listeningAreaSong);
+        setSong(currURI);
         listeningAreaController.song = currURI;
+        coveyTownController.emitListeningAreaUpdate(listeningAreaController);
         listeningArea.defaultSong = currURI;
-        setAreaSong(currURI);
         createListeningArea();
       } else {
         toast({
@@ -240,17 +341,14 @@ export default function SelectListeningModal({
 
   const handlePlayListeningAreaSong = async () => {
     console.log(listeningArea.defaultSong);
-    console.log(areaSong);
+    console.log(song);
     console.log(listeningAreaController.song);
+    console.log(listeningAreaSong);
     const playURI = listeningAreaController.song
       ? listeningAreaController.song
       : listeningArea.defaultSong;
-    const success = await spotify.player.play({
-      uris: [playURI],
-    });
-    console.log(success);
+    playSong(song);
   };
-
   return (
     <Modal
       isOpen={isOpen}
@@ -295,13 +393,14 @@ export default function SelectListeningModal({
                       width='100px'
                       height='100px'
                       onClick={() => playSong(track.uri)}
-                      onContextMenu={ev => queueSong(ev, track)}
+                      onContextMenu={ev => queueSong(track)}
                       cursor='pointer'>
                       <Card>
                         <Image src={track.album.images[0].url} alt={track.name} />
                         <Text isTruncated>{track.name}</Text>
                         <Text isTruncated>{track.artists[0].name}</Text>
                       </Card>
+                      <Button onClick={() => setPlaylistTo(track.uri)}>Add to Playlist</Button>
                     </Box>
                   ))}
                 </Flex>
@@ -309,8 +408,10 @@ export default function SelectListeningModal({
               <Box>
                 <Text> Queue </Text>
                 <List overflowY='scroll' maxH='100px'>
-                  {queue.map(song => (
-                    <ListItem key={song.id}>{song.name} - {song.artists[0].name}</ListItem>
+                  {queue.map(track => (
+                    <ListItem key={track.id}>
+                      {track.name} - {track.artists[0].name}
+                    </ListItem>
                   ))}
                 </List>
               </Box>
@@ -350,13 +451,32 @@ export default function SelectListeningModal({
             </Flex>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme='green' mr={3} onClick={handleSpotifyLogin}>
-              Login
-            </Button>
-            <Button colorScheme='green' mr={3} onClick={handleGetSongClick}>
-              Song Name
+            <Button colorScheme='green' mr={3} onClick={handleGetTopClick}>
+              Top Artists and Songs
             </Button>
             <Button onClick={closeModal}>Cancel</Button>
+          </ModalFooter>
+          <ModalFooter justifyContent='center' alignContent='center'>
+            <Flex justifyContent='center' align-items='center' flexDirection='column'>
+              <Button colorScheme='green' onClick={handleCreatePlaylist}>
+                Create Playlist
+              </Button>
+              <Button colorScheme='green' onClick={queuePlaylist}>
+                Queue Area Playlist
+              </Button>
+            </Flex>
+            <ModalFooter>
+              <Box justifyContent='center'>
+                <Text> Playlist </Text>
+                <List overflowY='scroll' maxH='100px'>
+                  {areaPlaylist?.tracks.items.map(track => (
+                    <ListItem key={track.track.id}>
+                      {(track.track as Track).name} - {(track.track as Track).artists[0].name}
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
+            </ModalFooter>
           </ModalFooter>
         </form>
       </ModalContent>
