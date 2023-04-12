@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Button,
   Flex,
@@ -137,6 +138,7 @@ export default function SelectListeningModal({
     } else {
       coveyTownController.unPause();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coveyTownController, isOpen]);
 
   useEffect(() => {

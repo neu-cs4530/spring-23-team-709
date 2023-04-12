@@ -104,6 +104,7 @@ export function ListeningArea({
 }): JSX.Element {
   const townController = useTownController();
   const listeningAreaController = useListeningAreaController(listeningArea.name);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectIsOpen, setSelectIsOpen] = useState(listeningAreaController.song === undefined);
   const [listeningAreaSong, setListeningAreaSong] = useState(listeningAreaController.song);
   useEffect(() => {
