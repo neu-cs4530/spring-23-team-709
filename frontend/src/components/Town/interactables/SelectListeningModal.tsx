@@ -310,7 +310,9 @@ export default function SelectListeningModal({
                 <Text> Queue </Text>
                 <List overflowY='scroll' maxH='100px'>
                   {queue.map(song => (
-                    <ListItem key={song.id}>{song.name} - {song.artists[0].name}</ListItem>
+                    <ListItem key={song.id}>
+                      {song.name} - {song.artists[0].name}
+                    </ListItem>
                   ))}
                 </List>
               </Box>
