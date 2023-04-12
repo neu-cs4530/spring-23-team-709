@@ -67,12 +67,6 @@ export function ListeningAreaSong({
           },
         }}
         playing={isPlaying}
-        // onProgress={state => {
-        // if (state.playedSeconds != 0 && state.playedSeconds != controller.elapsedTimeSec) {
-        // controller.elapsedTimeSec = state.playedSeconds;
-        // townController.emitListeningAreaUpdate(controller);
-        //   }
-        // }}
         onPlay={() => {
           if (!controller.isPlaying) {
             controller.isPlaying = true;
