@@ -15,10 +15,6 @@ import {
   ModalHeader,
   ModalOverlay,
   useToast,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useListeningAreaController } from '../../../classes/TownController';
@@ -292,9 +288,14 @@ export default function SelectListeningModal({
 
   const queuePlaylist = async () => {
     if (areaPlaylist?.tracks.items.length) {
+      const songs: Track[] = [];
       for (let i = 0; i < areaPlaylist?.tracks.items.length; i++) {
-        queueSong(areaPlaylist?.tracks.items[i].track as Track);
+        const songToQueue = areaPlaylist?.tracks.items[i].track as Track;
+        const success = await spotify.player.addToQueue(songToQueue.uri);
+        console.log(success);
+        songs.push(songToQueue);
       }
+      setQueue([...queue, ...songs]);
     }
   };
 
@@ -415,17 +416,6 @@ export default function SelectListeningModal({
                   ))}
                 </List>
               </Box>
-              {/* <Flex justifyContent='center' alignItems='center' mb={4}>
-                <Button colorScheme='green' mr={2} onClick={queueSong}>
-                  Queue Song
-                </Button>
-                <Input
-                  id='song'
-                  name='song'
-                  value={songQueue}
-                  onChange={e => setSongQueue(e.target.value)}
-                />
-              </Flex> */}
               <Flex justifyContent='center' alignItems='center'>
                 <Button colorScheme='green' mr={3} onClick={handlePrev}>
                   {'<'}
