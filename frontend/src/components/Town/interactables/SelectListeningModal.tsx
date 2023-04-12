@@ -299,20 +299,6 @@ export default function SelectListeningModal({
     }
   };
 
-  const setPlaylistTo = async (playlistName: string) => {
-    if (areaPlaylist) {
-      const success = await spotify.playlists.addItemToPlaylist(areaPlaylist.id, playlistName);
-      const playlist = await spotify.playlists.getPlaylist(areaPlaylist.id);
-      setAreaPlaylist(playlist);
-      console.log(success);
-    } else {
-      toast({
-        title: 'No playlist created',
-        status: 'error',
-      });
-    }
-  };
-
   const handleSetListeningAreaSong = async () => {
     const track = await spotify.player.getCurrentlyPlayingTrack();
     if (track) {
@@ -394,14 +380,17 @@ export default function SelectListeningModal({
                       width='100px'
                       height='100px'
                       onClick={() => playSong(track.uri)}
-                      onContextMenu={ev => queueSong(track)}
+                      onContextMenu={ev => {
+                        ev.preventDefault();
+                        queueSong(track);
+                      }}
                       cursor='pointer'>
                       <Card>
                         <Image src={track.album.images[0].url} alt={track.name} />
                         <Text isTruncated>{track.name}</Text>
                         <Text isTruncated>{track.artists[0].name}</Text>
                       </Card>
-                      <Button onClick={() => setPlaylistTo(track.uri)}>Add to Playlist</Button>
+                      <Button onClick={() => setPlaylist(track.uri)}>Add to Playlist</Button>
                     </Box>
                   ))}
                 </Flex>
