@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Container } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';

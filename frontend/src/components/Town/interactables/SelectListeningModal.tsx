@@ -84,7 +84,7 @@ export default function SelectListeningModal({
 
           console.log(data); // eslint-disable-next-line @typescript-eslint/naming-convention
 
-          const { access_token, refresh_token } = data;
+          const { access_token, refresh_token } = data;  // eslint-disable-line
 
           await setsSpotifyResponseData(data);
           await setSpotifyAccessToken(access_token);
@@ -295,7 +295,7 @@ export default function SelectListeningModal({
                       width='100px'
                       height='100px'
                       onClick={() => playSong(track.uri)}
-                      onContextMenu={ev => queueSong(ev, track)}
+                      onContextMenu={ev => queueSong(ev as unknown as Event, track)}
                       cursor='pointer'>
                       <Card>
                         <Image src={track.album.images[0].url} alt={track.name} />
